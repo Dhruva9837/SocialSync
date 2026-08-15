@@ -31,8 +31,9 @@ export default function AdminUsersPage() {
 
   const fetchUsers = async () => {
     const token = localStorage.getItem("socialsync_token");
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
-      const res = await fetch("http://localhost:5000/api/admin/users", {
+      const res = await fetch(`${apiUrl}/api/admin/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.status === 403) throw new Error("Access forbidden. You must be an administrator to view this page.");
@@ -56,7 +57,8 @@ export default function AdminUsersPage() {
       return;
     }
     try {
-      const res = await fetch("http://localhost:5000/api/admin/users", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const res = await fetch(`${apiUrl}/api/admin/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ name, email, password, role }),
@@ -74,8 +76,9 @@ export default function AdminUsersPage() {
     if (!confirm(`Are you sure you want to revoke access for ${userName}? This action cannot be undone.`)) return;
     setError(null); setFeedback(null);
     const token = localStorage.getItem("socialsync_token");
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/users/${id}`, {
+      const res = await fetch(`${apiUrl}/api/admin/users/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

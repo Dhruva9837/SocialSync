@@ -50,7 +50,8 @@ export default function Sidebar() {
     }
     setUser(JSON.parse(storedUser));
 
-    fetch("http://localhost:5000/api/posts/stats", {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    fetch(`${apiUrl}/api/posts/stats`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {

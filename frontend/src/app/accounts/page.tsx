@@ -28,8 +28,9 @@ export default function AccountsPage() {
 
   const fetchAccounts = async () => {
     const token = localStorage.getItem("socialsync_token");
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
-      const res = await fetch("http://localhost:5000/api/oauth/accounts", {
+      const res = await fetch(`${apiUrl}/api/oauth/accounts`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch accounts");
@@ -46,8 +47,9 @@ export default function AccountsPage() {
   const handleConnect = async (platform: "facebook" | "youtube") => {
     setError(null); setMessage(null);
     const token = localStorage.getItem("socialsync_token");
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
-      const res = await fetch(`http://localhost:5000/api/oauth/${platform}/url`, {
+      const res = await fetch(`${apiUrl}/api/oauth/${platform}/url`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error(`Failed to initiate connection for ${platform}`);
@@ -60,8 +62,9 @@ export default function AccountsPage() {
     if (!confirm("Are you sure you want to disconnect this account? Any scheduled posts to this account may fail.")) return;
     setError(null); setMessage(null);
     const token = localStorage.getItem("socialsync_token");
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
-      const res = await fetch(`http://localhost:5000/api/oauth/accounts/${id}`, {
+      const res = await fetch(`${apiUrl}/api/oauth/accounts/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

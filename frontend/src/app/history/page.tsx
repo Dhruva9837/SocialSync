@@ -48,8 +48,9 @@ export default function HistoryPage() {
 
   const fetchPosts = async () => {
     const token = localStorage.getItem("socialsync_token");
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
-      const res = await fetch("http://localhost:5000/api/posts", {
+      const res = await fetch(`${apiUrl}/api/posts`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch posts");
@@ -66,8 +67,9 @@ export default function HistoryPage() {
   const handleRetry = async (logId: string) => {
     setError(null); setFeedback(null);
     const token = localStorage.getItem("socialsync_token");
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
-      const res = await fetch("http://localhost:5000/api/posts/retry", {
+      const res = await fetch(`${apiUrl}/api/posts/retry`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ logId }),
@@ -267,7 +269,7 @@ export default function HistoryPage() {
             </div>
             <div className="aspect-video bg-black flex items-center justify-center">
               <video
-                src={`http://localhost:5000/api/posts/media/${previewPostId}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/posts/media/${previewPostId}`}
                 controls
                 autoPlay
                 className="w-full h-full object-contain"

@@ -44,7 +44,8 @@ export default function CreatePostPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("socialsync_token");
-    fetch("http://localhost:5000/api/oauth/accounts", {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    fetch(`${apiUrl}/api/oauth/accounts`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -105,7 +106,8 @@ export default function CreatePostPage() {
     if (scheduledAtIso) formData.append("scheduledAt", scheduledAtIso);
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://localhost:5000/api/posts");
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    xhr.open("POST", `${apiUrl}/api/posts`);
     xhr.setRequestHeader("Authorization", `Bearer ${token}`);
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) setUploadProgress(Math.round((event.loaded / event.total) * 100));

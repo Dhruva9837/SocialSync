@@ -30,7 +30,8 @@ export default function FacebookCallbackPage() {
     }
 
     // Exchange code in the backend
-    fetch("http://localhost:5000/api/oauth/facebook/callback", {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    fetch(`${apiUrl}/api/oauth/facebook/callback`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

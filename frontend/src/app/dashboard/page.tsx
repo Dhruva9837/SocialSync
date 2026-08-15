@@ -47,13 +47,14 @@ export default function DashboardPage() {
     const storedUser = localStorage.getItem("socialsync_user");
     if (storedUser) setUser(JSON.parse(storedUser));
 
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
-      const postsRes = await fetch("http://localhost:5000/api/posts", {
+      const postsRes = await fetch(`${apiUrl}/api/posts`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (postsRes.ok) setPosts(await postsRes.json());
 
-      const statsRes = await fetch("http://localhost:5000/api/posts/stats", {
+      const statsRes = await fetch(`${apiUrl}/api/posts/stats`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (statsRes.ok) setStorage(await statsRes.json());
@@ -71,8 +72,9 @@ export default function DashboardPage() {
     setCleanupLoading(true);
     setCleanupMessage(null);
     const token = localStorage.getItem("socialsync_token");
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     try {
-      const res = await fetch("http://localhost:5000/api/admin/cleanup", {
+      const res = await fetch(`${apiUrl}/api/admin/cleanup`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
