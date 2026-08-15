@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+:root {
+  --background: #080A12;
+  --surface:    #111528;
+  --border:     #252B41;
+
+  --primary:        #6366F1;
+  --primary-hover:  #818CF8;
+  --secondary:      #22D3EE;
+
+  --text:       #F8FAFC;
+  --muted:      #94A3B8;
+
+  --success:    #22C55E;
+  --error:      #EF4444;
+
+  --card-bg:     rgba(17, 21, 40, 0.65);
+  --card-border: rgba(99, 102, 241, 0.15);
+  --input-bg:    rgba(8, 10, 18, 0.75);
+  --input-border:rgba(99, 102, 241, 0.22);
+
+  --cta-gradient: linear-gradient(135deg, #6366F1 0%, #22D3EE 100%);
+  --glass-glow:   0 8px 32px 0 rgba(99, 102, 241, 0.10);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+  background-image:
+    radial-gradient(circle at 12% 18%,  rgba(99, 102, 241, 0.16) 0%, transparent 48%),
+    radial-gradient(circle at 90% 80%,  rgba(34, 211, 238, 0.09) 0%, transparent 52%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Glassmorphism ─────────────────────────────────────── */
+.glass-panel {
+  background: var(--card-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--card-border);
+  border-radius: 1rem;
+  box-shadow: var(--glass-glow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(99, 102, 241, 0.35);
+  box-shadow: 0 8px 32px 0 rgba(99, 102, 241, 0.18);
+  transform: translateY(-2px);
+}
+
+/* ── Inputs ────────────────────────────────────────────── */
+.glass-input {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text);
+  outline: none;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.22);
+}
+
+/* ── CTA Button ────────────────────────────────────────── */
+.btn-cta {
+  background: var(--cta-gradient);
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 24px 0 rgba(99, 102, 241, 0.30);
+}
+.btn-cta:hover  { opacity: 0.92; box-shadow: 0 6px 28px 0 rgba(99, 102, 241, 0.40); }
+.btn-cta:active { transform: scale(0.97); }
+.btn-cta:disabled { opacity: 0.45; pointer-events: none; }
+
+/* ── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: rgba(8, 10, 18, 0.5); }
+::-webkit-scrollbar-thumb  { background: rgba(99, 102, 241, 0.25); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.50); }
+
+/* ── Animations ────────────────────────────────────────── */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.8; }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

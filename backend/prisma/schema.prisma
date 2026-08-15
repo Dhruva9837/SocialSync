@@ -1,0 +1,75 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String          @id @default(uuid())
+  name         String
+  email        String          @unique
+  passwordHash String
+  role         String          // "ADMIN" | "EDITOR"
+  createdAt    DateTime        @default(now())
+  socialActive SocialAccount[]
+  posts        Post[]
+}
+
+model SocialAccount {
+  id           String    @id @default(uuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platform     String    // "FACEBOOK" | "YOUTUBE"
+  accountId    String    // Page ID or Channel ID
+  accountName  String
+  accessToken  String    // Encrypted
+  refreshToken String?   // Encrypted (mostly for YouTube)
+  expiresAt    DateTime?
+  status       String    // "CONNECTED" | "DISCONNECTED"
+  createdAt    DateTime  @default(now())
+
+  @@unique([userId, platform, accountId])
+}
+
+model Post {
+  id          String       @id @default(uuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String       // Primarily for YouTube title
+  description String       // Primarily for YouTube description
+  caption     String       // Primarily for Facebook caption
+  status      String       // "DRAFT" | "SCHEDULED" | "PUBLISHING" | "COMPLETED" | "FAILED"
+  scheduledAt DateTime?
+  createdAt   DateTime     @default(now())
+  media       Media[]
+  logs        PublishLog[]
+}
+
+model Media {
+  id         String   @id @default(uuid())
+  postId     String
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  storageKey String   // Path or reference key in storage
+  mediaUrl   String   // Direct download/stream URL
+  fileName   String
+  fileSize   Int
+  mimeType   String
+  uploadedAt DateTime @default(now())
+  expiresAt  DateTime
+  status     String   // "ACTIVE" | "EXPIRED"
+}
+
+model PublishLog {
+  id             String    @id @default(uuid())
+  postId         String
+  post           Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  platform       String    // "FACEBOOK" | "YOUTUBE"
+  status         String    // "PUBLISHING" | "PUBLISHED" | "FAILED"
+  platformPostId String?   // ID returned by FB/YT
+  platformUrl    String?   // URL to the video on FB/YT
+  errorMessage   String?
+  publishedAt    DateTime?
+}
