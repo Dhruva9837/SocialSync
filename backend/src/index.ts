@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import bcrypt from 'bcrypt';
+import prisma from './db';
 import { authenticate, authorize } from './middleware/auth';
 import { upload } from './middleware/upload';
 
@@ -105,8 +107,33 @@ app.post('/api/posts/retry', authenticate, retryLog);
 // 5. Video Media Streaming (HTML5 Range compatible)
 app.get('/api/posts/media/:postId', serveMedia);
 
+// Auto seed admin user if database is empty
+async function autoSeedAdmin() {
+  try {
+    const userCount = await prisma.user.count();
+    if (userCount === 0) {
+      const defaultEmail = 'admin@socialsync.local';
+      const defaultPassword = 'AdminPassword2026!';
+      const passwordHash = await bcrypt.hash(defaultPassword, 10);
+      
+      await prisma.user.create({
+        data: {
+          name: 'Default Admin',
+          email: defaultEmail,
+          passwordHash,
+          role: 'ADMIN',
+        },
+      });
+      console.log('[AutoSeed] Created default admin user: admin@socialsync.local');
+    }
+  } catch (err) {
+    console.error('[AutoSeed] Error during auto-seeding:', err);
+  }
+}
+
 // Start Express Server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await autoSeedAdmin();
   console.log(`==================================================`);
   console.log(`SocialSync Backend running on: http://localhost:${PORT}`);
   console.log(`Environment:                  ${process.env.NODE_ENV || 'development'}`);
