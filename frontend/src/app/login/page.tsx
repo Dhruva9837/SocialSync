@@ -71,17 +71,18 @@ export default function LoginPage() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6366F1] mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-indigo-400 mb-2">
               Email Address
             </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#6366F1]">
-                <Mail size={16} />
-              </span>
+            <div className="relative flex items-center">
+              <div className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-400 z-10">
+                <Mail size={18} />
+              </div>
               <input
                 type="email"
                 required
-                className="w-full glass-input pl-10 rounded-lg text-sm py-2.5 text-[#F8FAFC]"
+                style={{ paddingLeft: "2.75rem", paddingRight: "1rem" }}
+                className="w-full glass-input rounded-xl text-sm py-3 text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500/30"
                 placeholder="you@domain.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -90,17 +91,18 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6366F1] mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-indigo-400 mb-2">
               Password
             </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#6366F1]">
-                <Lock size={16} />
-              </span>
+            <div className="relative flex items-center">
+              <div className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-400 z-10">
+                <Lock size={18} />
+              </div>
               <input
                 type={showPassword ? "text" : "password"}
                 required
-                className="w-full glass-input pl-10 pr-10 rounded-lg text-sm py-2.5 text-[#F8FAFC]"
+                style={{ paddingLeft: "2.75rem", paddingRight: "2.75rem" }}
+                className="w-full glass-input rounded-xl text-sm py-3 text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500/30"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -108,9 +110,9 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#94A3B8] hover:text-white"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors z-10 p-1 rounded-md"
               >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
@@ -118,7 +120,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="btn-cta w-full py-2.5 mt-2 rounded-lg text-sm"
+            className="btn-cta w-full py-3 mt-3 rounded-xl text-sm font-semibold tracking-wide transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 active:scale-[0.98]"
           >
             {loading ? "Signing in…" : "Sign In"}
           </button>
