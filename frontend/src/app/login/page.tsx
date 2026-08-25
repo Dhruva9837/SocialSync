@@ -37,7 +37,11 @@ export default function LoginPage() {
       localStorage.setItem("socialsync_user", JSON.stringify(data.user));
       router.replace("/dashboard");
     } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
+      if (err.message === "Failed to fetch" || err.name === "TypeError") {
+        setError("Unable to connect to backend server. Please verify your Render backend URL is set in Vercel (NEXT_PUBLIC_API_URL).");
+      } else {
+        setError(err.message || "An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
