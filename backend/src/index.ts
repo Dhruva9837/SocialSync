@@ -27,6 +27,9 @@ import {
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust reverse proxy header (Render, Railway, Nginx, Cloudflare)
+app.set('trust proxy', 1);
+
 // Rate limiting: max 150 requests per 15 minutes per IP
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -38,15 +41,38 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-// Configure CORS for Next.js development server
+// Configure CORS for Next.js app (dev & prod)
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  process.env.FRONTEND_URL,
+].filter(Boolean) as string[];
+
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    },
     credentials: true,
   })
 );
 
 app.use(express.json());
+
+// Health check endpoint for Render/Railway monitoring
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    mockMode: process.env.MOCK_MODE || 'false',
+  });
+});
+
 
 // ----------------------------------------------------
 // Routes

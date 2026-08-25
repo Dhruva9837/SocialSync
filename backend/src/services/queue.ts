@@ -1,4 +1,4 @@
-import { Queue, Worker } from 'bullmq';
+import { Queue, Worker, Job } from 'bullmq';
 import IORedis from 'ioredis';
 import prisma from '../db';
 import { publishToFacebook, publishToYouTube } from './publishers';
@@ -192,17 +192,17 @@ if (USE_REDIS && redisConnection) {
 
   realWorker = new Worker<PublishJobData>(
     QUEUE_NAME,
-    async (job) => {
+    async (job: Job<PublishJobData>) => {
       await executePublishingJob(job.data.postId, job.data.platforms);
     },
     { connection: redisConnection }
   );
 
-  realWorker.on('completed', (job) => {
+  realWorker.on('completed', (job: Job<PublishJobData>) => {
     console.log(`[Queue] BullMQ job ${job.id} completed successfully.`);
   });
 
-  realWorker.on('failed', (job, err) => {
+  realWorker.on('failed', (job: Job<PublishJobData> | undefined, err: Error) => {
     console.error(`[Queue] BullMQ job ${job?.id} failed:`, err);
   });
 }
@@ -228,7 +228,7 @@ class InMemoryQueue {
 
   private async processNext() {
     const now = Date.now();
-    const readyJobIndex = this.queue.findIndex((job) => job.scheduledAt <= now);
+    const readyJobIndex = this.queue.findIndex((job: { data: PublishJobData; scheduledAt: number }) => job.scheduledAt <= now);
     
     if (readyJobIndex !== -1) {
       const [{ data }] = this.queue.splice(readyJobIndex, 1);

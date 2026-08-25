@@ -27,8 +27,10 @@ const FACEBOOK_REDIRECT_URI = process.env.FACEBOOK_REDIRECT_URI || '';
  * Get OAuth login URL for YouTube
  */
 export async function getYouTubeUrl(req: AuthRequest, res: Response) {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
   if (MOCK_MODE) {
-    const mockUrl = `http://localhost:3000/accounts/callback/youtube?code=mock_google_oauth_code`;
+    const mockUrl = `${frontendUrl}/accounts/callback/youtube?code=mock_google_oauth_code`;
     return res.json({ url: mockUrl });
   }
 
@@ -51,8 +53,10 @@ export async function getYouTubeUrl(req: AuthRequest, res: Response) {
  * Get OAuth login URL for Facebook Pages
  */
 export async function getFacebookUrl(req: AuthRequest, res: Response) {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
   if (MOCK_MODE) {
-    const mockUrl = `http://localhost:3000/accounts/callback/facebook?code=mock_facebook_oauth_code`;
+    const mockUrl = `${frontendUrl}/accounts/callback/facebook?code=mock_facebook_oauth_code`;
     return res.json({ url: mockUrl });
   }
 
