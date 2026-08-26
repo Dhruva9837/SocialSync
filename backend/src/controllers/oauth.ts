@@ -28,10 +28,14 @@ const FACEBOOK_REDIRECT_URI = process.env.FACEBOOK_REDIRECT_URI || '';
  */
 export async function getYouTubeUrl(req: AuthRequest, res: Response) {
   const originUrl = req.headers.origin || req.headers.referer || process.env.FRONTEND_URL || 'http://localhost:3000';
-  const frontendUrl = String(originUrl).replace(/\/+$/, '');
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${frontendUrl}/accounts/callback/youtube`;
+  const frontendUrl = String(originUrl).replace(/\/+$/, '').split('/accounts')[0];
+  
+  let redirectUri = `${frontendUrl}/accounts/callback/youtube`;
+  if (process.env.GOOGLE_REDIRECT_URI && process.env.GOOGLE_REDIRECT_URI.startsWith('http') && !process.env.GOOGLE_REDIRECT_URI.includes('localhost')) {
+    redirectUri = process.env.GOOGLE_REDIRECT_URI;
+  }
 
-  if (MOCK_MODE) {
+  if (MOCK_MODE || req.query.mock === 'true' || !GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
     const mockUrl = `${frontendUrl}/accounts/callback/youtube?code=mock_google_oauth_code`;
     return res.json({ url: mockUrl });
   }
@@ -49,9 +53,9 @@ export async function getYouTubeUrl(req: AuthRequest, res: Response) {
   );
 
   const url = client.generateAuthUrl({
-    access_type: 'offline', // ensures we get a refresh token
+    access_type: 'offline',
     scope: scopes,
-    prompt: 'consent' // force consent screen to get refresh token
+    prompt: 'consent'
   });
 
   return res.json({ url });
@@ -62,19 +66,22 @@ export async function getYouTubeUrl(req: AuthRequest, res: Response) {
  */
 export async function getFacebookUrl(req: AuthRequest, res: Response) {
   const originUrl = req.headers.origin || req.headers.referer || process.env.FRONTEND_URL || 'http://localhost:3000';
-  const frontendUrl = String(originUrl).replace(/\/+$/, '');
-  const redirectUri = process.env.FACEBOOK_REDIRECT_URI || `${frontendUrl}/accounts/callback/facebook`;
+  const frontendUrl = String(originUrl).replace(/\/+$/, '').split('/accounts')[0];
+  
+  let redirectUri = `${frontendUrl}/accounts/callback/facebook`;
+  if (process.env.FACEBOOK_REDIRECT_URI && process.env.FACEBOOK_REDIRECT_URI.startsWith('http') && !process.env.FACEBOOK_REDIRECT_URI.includes('localhost')) {
+    redirectUri = process.env.FACEBOOK_REDIRECT_URI;
+  }
 
-  if (MOCK_MODE) {
+  if (MOCK_MODE || req.query.mock === 'true' || !FACEBOOK_CLIENT_ID || FACEBOOK_CLIENT_ID === 'YOUR_FACEBOOK_CLIENT_ID') {
     const mockUrl = `${frontendUrl}/accounts/callback/facebook?code=mock_facebook_oauth_code`;
     return res.json({ url: mockUrl });
   }
 
-  // Valid scopes for Meta Graph API v20.0 (removed deprecated 'publish_video' scope)
+  // Core scopes for Facebook Pages publishing (removed pages_read_engagement & publish_video for maximum Meta compatibility)
   const scopes = [
     'public_profile',
     'pages_show_list',
-    'pages_read_engagement',
     'pages_manage_posts'
   ];
 
@@ -141,8 +148,12 @@ export async function handleYouTubeCallback(req: AuthRequest, res: Response) {
 
     // Real Google Auth exchange
     const originUrl = req.headers.origin || req.headers.referer || process.env.FRONTEND_URL || 'http://localhost:3000';
-    const frontendUrl = String(originUrl).replace(/\/+$/, '');
-    const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${frontendUrl}/accounts/callback/youtube`;
+    const frontendUrl = String(originUrl).replace(/\/+$/, '').split('/accounts')[0];
+    
+    let redirectUri = `${frontendUrl}/accounts/callback/youtube`;
+    if (process.env.GOOGLE_REDIRECT_URI && process.env.GOOGLE_REDIRECT_URI.startsWith('http') && !process.env.GOOGLE_REDIRECT_URI.includes('localhost')) {
+      redirectUri = process.env.GOOGLE_REDIRECT_URI;
+    }
 
     const client = new google.auth.OAuth2(
       GOOGLE_CLIENT_ID,
@@ -254,8 +265,12 @@ export async function handleFacebookCallback(req: AuthRequest, res: Response) {
 
     // 1. Exchange auth code for user access token
     const originUrl = req.headers.origin || req.headers.referer || process.env.FRONTEND_URL || 'http://localhost:3000';
-    const frontendUrl = String(originUrl).replace(/\/+$/, '');
-    const redirectUri = process.env.FACEBOOK_REDIRECT_URI || `${frontendUrl}/accounts/callback/facebook`;
+    const frontendUrl = String(originUrl).replace(/\/+$/, '').split('/accounts')[0];
+    
+    let redirectUri = `${frontendUrl}/accounts/callback/facebook`;
+    if (process.env.FACEBOOK_REDIRECT_URI && process.env.FACEBOOK_REDIRECT_URI.startsWith('http') && !process.env.FACEBOOK_REDIRECT_URI.includes('localhost')) {
+      redirectUri = process.env.FACEBOOK_REDIRECT_URI;
+    }
 
     const tokenUrl = `https://graph.facebook.com/v20.0/oauth/access_token?client_id=${FACEBOOK_CLIENT_ID}&redirect_uri=${encodeURIComponent(
       redirectUri
