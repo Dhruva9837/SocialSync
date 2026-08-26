@@ -13,6 +13,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+import { getApiUrl } from "@/lib/api";
+
 interface Post {
   id: string;
   title: string;
@@ -47,7 +49,7 @@ export default function DashboardPage() {
     const storedUser = localStorage.getItem("socialsync_user");
     if (storedUser) setUser(JSON.parse(storedUser));
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = getApiUrl();
     try {
       const postsRes = await fetch(`${apiUrl}/api/posts`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -72,7 +74,7 @@ export default function DashboardPage() {
     setCleanupLoading(true);
     setCleanupMessage(null);
     const token = localStorage.getItem("socialsync_token");
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = getApiUrl();
     try {
       const res = await fetch(`${apiUrl}/api/admin/cleanup`, {
         method: "POST",

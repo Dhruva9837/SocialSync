@@ -8,6 +8,7 @@ import {
   Video, Upload, AlertTriangle, CheckCircle,
   Tv, Clock, Trash2, FileCheck,
 } from "lucide-react";
+import { getApiUrl } from "@/lib/api";
 
 // Custom Facebook icon (not available in lucide-react)
 const FacebookIcon = ({ size = 18, className = "" }: { size?: number; className?: string }) => (
@@ -44,7 +45,7 @@ export default function CreatePostPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("socialsync_token");
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = getApiUrl();
     fetch(`${apiUrl}/api/oauth/accounts`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -106,7 +107,7 @@ export default function CreatePostPage() {
     if (scheduledAtIso) formData.append("scheduledAt", scheduledAtIso);
 
     const xhr = new XMLHttpRequest();
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = getApiUrl();
     xhr.open("POST", `${apiUrl}/api/posts`);
     xhr.setRequestHeader("Authorization", `Bearer ${token}`);
     xhr.upload.onprogress = (event) => {

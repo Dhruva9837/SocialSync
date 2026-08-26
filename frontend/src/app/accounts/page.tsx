@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import { Link2, Unlink, AlertTriangle, CheckCircle, Video } from "lucide-react";
 
+import { getApiUrl } from "@/lib/api";
+
 const FacebookIcon = ({ size = 18, className = "" }: { size?: number; className?: string }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" className={className}>
     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -28,12 +30,15 @@ export default function AccountsPage() {
 
   const fetchAccounts = async () => {
     const token = localStorage.getItem("socialsync_token");
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = getApiUrl();
     try {
       const res = await fetch(`${apiUrl}/api/oauth/accounts`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error("Failed to fetch accounts");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to fetch accounts");
+      }
       setAccounts(await res.json());
     } catch (err: any) {
       setError(err.message);
@@ -47,13 +52,13 @@ export default function AccountsPage() {
   const handleConnect = async (platform: "facebook" | "youtube") => {
     setError(null); setMessage(null);
     const token = localStorage.getItem("socialsync_token");
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = getApiUrl();
     try {
       const res = await fetch(`${apiUrl}/api/oauth/${platform}/url`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error(`Failed to initiate connection for ${platform}`);
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Failed to initiate connection for ${platform}. Check backend configuration.`);
       if (data.url) window.location.href = data.url;
     } catch (err: any) { setError(err.message); }
   };
@@ -62,13 +67,13 @@ export default function AccountsPage() {
     if (!confirm("Are you sure you want to disconnect this account? Any scheduled posts to this account may fail.")) return;
     setError(null); setMessage(null);
     const token = localStorage.getItem("socialsync_token");
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = getApiUrl();
     try {
       const res = await fetch(`${apiUrl}/api/oauth/accounts/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Failed to disconnect account");
       setMessage("Account disconnected successfully");
       fetchAccounts();

@@ -6,6 +6,7 @@ import {
   Clock, CheckCircle, XCircle, AlertTriangle,
   Play, RotateCcw, ExternalLink, Video, X,
 } from "lucide-react";
+import { getApiUrl } from "@/lib/api";
 
 interface PublishLog {
   id: string;
@@ -48,7 +49,7 @@ export default function HistoryPage() {
 
   const fetchPosts = async () => {
     const token = localStorage.getItem("socialsync_token");
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = getApiUrl();
     try {
       const res = await fetch(`${apiUrl}/api/posts`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -67,7 +68,7 @@ export default function HistoryPage() {
   const handleRetry = async (logId: string) => {
     setError(null); setFeedback(null);
     const token = localStorage.getItem("socialsync_token");
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = getApiUrl();
     try {
       const res = await fetch(`${apiUrl}/api/posts/retry`, {
         method: "POST",
@@ -269,7 +270,7 @@ export default function HistoryPage() {
             </div>
             <div className="aspect-video bg-black flex items-center justify-center">
               <video
-                src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/posts/media/${previewPostId}`}
+                src={`${getApiUrl()}/api/posts/media/${previewPostId}`}
                 controls
                 autoPlay
                 className="w-full h-full object-contain"

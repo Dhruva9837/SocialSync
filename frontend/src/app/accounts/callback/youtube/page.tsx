@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { getApiUrl } from "@/lib/api";
 
 export default function YouTubeCallbackPage() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function YouTubeCallbackPage() {
     }
 
     // Exchange code in the backend
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = getApiUrl();
     fetch(`${apiUrl}/api/oauth/youtube/callback`, {
       method: "POST",
       headers: {

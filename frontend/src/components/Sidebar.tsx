@@ -17,6 +17,8 @@ import {
   Database,
 } from "lucide-react";
 
+import { getApiUrl } from "@/lib/api";
+
 interface UserProfile {
   id: string;
   name: string;
@@ -50,7 +52,7 @@ export default function Sidebar() {
     }
     setUser(JSON.parse(storedUser));
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = getApiUrl();
     fetch(`${apiUrl}/api/posts/stats`, {
       headers: { Authorization: `Bearer ${token}` },
     })

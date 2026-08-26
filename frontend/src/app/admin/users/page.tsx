@@ -7,6 +7,7 @@ import {
   Users, Trash2, ShieldCheck, User,
   AlertTriangle, CheckCircle, Plus,
 } from "lucide-react";
+import { getApiUrl } from "@/lib/api";
 
 interface TeamMember {
   id: string;
@@ -31,7 +32,7 @@ export default function AdminUsersPage() {
 
   const fetchUsers = async () => {
     const token = localStorage.getItem("socialsync_token");
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = getApiUrl();
     try {
       const res = await fetch(`${apiUrl}/api/admin/users`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -57,7 +58,7 @@ export default function AdminUsersPage() {
       return;
     }
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = getApiUrl();
       const res = await fetch(`${apiUrl}/api/admin/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
@@ -76,7 +77,7 @@ export default function AdminUsersPage() {
     if (!confirm(`Are you sure you want to revoke access for ${userName}? This action cannot be undone.`)) return;
     setError(null); setFeedback(null);
     const token = localStorage.getItem("socialsync_token");
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = getApiUrl();
     try {
       const res = await fetch(`${apiUrl}/api/admin/users/${id}`, {
         method: "DELETE",
