@@ -61,6 +61,28 @@ Yeh guide aapko **SocialSync Express + TypeScript Backend** ko **Render** ya **R
 
 ---
 
+## 🔑 OAuth Authorized Redirect URIs Setup Guide
+
+### 1. Google Cloud Console (YouTube API) — Fix `Error 400: redirect_uri_mismatch`
+1. Go to **[Google Cloud Console](https://console.cloud.google.com/)** ➔ Select your project.
+2. Navigate to **APIs & Services** ➔ **Credentials**.
+3. Under **OAuth 2.0 Client IDs**, edit your Web Application Client ID.
+4. Under **Authorized redirect URIs**, add BOTH:
+   - `https://social-sync-puce.vercel.app/accounts/callback/youtube`
+   - `http://localhost:3000/accounts/callback/youtube`
+5. Click **Save**.
+
+### 2. Meta Developer Portal (Facebook Login) — Fix `Invalid Scopes` / Redirect error
+1. Go to **[Meta Developer Portal](https://developers.facebook.com/)** ➔ Select your Facebook App.
+2. Navigate to **Facebook Login** ➔ **Settings** (or **Use Cases** ➔ **Facebook Login** ➔ **Settings**).
+3. Under **Valid OAuth Redirect URIs**, add BOTH:
+   - `https://social-sync-puce.vercel.app/accounts/callback/facebook`
+   - `http://localhost:3000/accounts/callback/facebook`
+4. Click **Save Changes**.
+
+
+---
+
 ## Health Check Verification
 
 Deployment complete hone ke baad, browser me yeh test karein:
