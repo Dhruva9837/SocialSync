@@ -27,7 +27,9 @@ const FACEBOOK_REDIRECT_URI = process.env.FACEBOOK_REDIRECT_URI || '';
  * Get OAuth login URL for YouTube
  */
 export async function getYouTubeUrl(req: AuthRequest, res: Response) {
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  const originUrl = req.headers.origin || req.headers.referer || process.env.FRONTEND_URL || 'http://localhost:3000';
+  const frontendUrl = String(originUrl).replace(/\/+$/, '');
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${frontendUrl}/accounts/callback/youtube`;
 
   if (MOCK_MODE) {
     const mockUrl = `${frontendUrl}/accounts/callback/youtube?code=mock_google_oauth_code`;
@@ -40,7 +42,13 @@ export async function getYouTubeUrl(req: AuthRequest, res: Response) {
     'https://www.googleapis.com/auth/userinfo.profile'
   ];
 
-  const url = oauth2Client.generateAuthUrl({
+  const client = new google.auth.OAuth2(
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    redirectUri
+  );
+
+  const url = client.generateAuthUrl({
     access_type: 'offline', // ensures we get a refresh token
     scope: scopes,
     prompt: 'consent' // force consent screen to get refresh token
@@ -53,22 +61,25 @@ export async function getYouTubeUrl(req: AuthRequest, res: Response) {
  * Get OAuth login URL for Facebook Pages
  */
 export async function getFacebookUrl(req: AuthRequest, res: Response) {
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  const originUrl = req.headers.origin || req.headers.referer || process.env.FRONTEND_URL || 'http://localhost:3000';
+  const frontendUrl = String(originUrl).replace(/\/+$/, '');
+  const redirectUri = process.env.FACEBOOK_REDIRECT_URI || `${frontendUrl}/accounts/callback/facebook`;
 
   if (MOCK_MODE) {
     const mockUrl = `${frontendUrl}/accounts/callback/facebook?code=mock_facebook_oauth_code`;
     return res.json({ url: mockUrl });
   }
 
+  // Valid scopes for Meta Graph API v20.0 (removed deprecated 'publish_video' scope)
   const scopes = [
+    'public_profile',
     'pages_show_list',
     'pages_read_engagement',
-    'pages_manage_posts',
-    'publish_video'
+    'pages_manage_posts'
   ];
 
   const url = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${FACEBOOK_CLIENT_ID}&redirect_uri=${encodeURIComponent(
-    FACEBOOK_REDIRECT_URI
+    redirectUri
   )}&scope=${scopes.join(',')}&response_type=code`;
 
   return res.json({ url });
@@ -129,11 +140,21 @@ export async function handleYouTubeCallback(req: AuthRequest, res: Response) {
     }
 
     // Real Google Auth exchange
-    const { tokens } = await oauth2Client.getToken(code);
-    oauth2Client.setCredentials(tokens);
+    const originUrl = req.headers.origin || req.headers.referer || process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = String(originUrl).replace(/\/+$/, '');
+    const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${frontendUrl}/accounts/callback/youtube`;
+
+    const client = new google.auth.OAuth2(
+      GOOGLE_CLIENT_ID,
+      GOOGLE_CLIENT_SECRET,
+      redirectUri
+    );
+
+    const { tokens } = await client.getToken(code);
+    client.setCredentials(tokens);
 
     // Fetch Channel Information
-    const youtube = google.youtube({ version: 'v3', auth: oauth2Client });
+    const youtube = google.youtube({ version: 'v3', auth: client });
     const channelRes = await youtube.channels.list({
       part: ['snippet'],
       mine: true,
@@ -232,8 +253,12 @@ export async function handleFacebookCallback(req: AuthRequest, res: Response) {
     }
 
     // 1. Exchange auth code for user access token
+    const originUrl = req.headers.origin || req.headers.referer || process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = String(originUrl).replace(/\/+$/, '');
+    const redirectUri = process.env.FACEBOOK_REDIRECT_URI || `${frontendUrl}/accounts/callback/facebook`;
+
     const tokenUrl = `https://graph.facebook.com/v20.0/oauth/access_token?client_id=${FACEBOOK_CLIENT_ID}&redirect_uri=${encodeURIComponent(
-      FACEBOOK_REDIRECT_URI
+      redirectUri
     )}&client_secret=${FACEBOOK_CLIENT_SECRET}&code=${code}`;
 
     const tokenRes = await axios.get(tokenUrl);
