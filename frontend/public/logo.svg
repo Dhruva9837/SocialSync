@@ -1,0 +1,38 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sync-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0FF" />
+      <stop offset="50%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#A855F7" />
+    </linearGradient>
+    <linearGradient id="sync-grad-2" x1="100%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#00F0FF" />
+      <stop offset="100%" stop-color="#3B82F6" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background App Icon Frame -->
+  <rect width="512" height="512" rx="128" fill="#0B0F19" />
+  <rect x="8" y="8" width="496" height="496" rx="120" stroke="url(#sync-grad-1)" stroke-opacity="0.25" stroke-width="4" />
+
+  <!-- Logo Mark: S-shaped Sync Arrows & Nodes -->
+  <g filter="url(#glow)">
+    <!-- Top Sync Arc (Letter S upper curve) -->
+    <path d="M 170 190 C 170 135, 230 110, 290 110 C 355 110, 400 155, 400 215 C 400 270, 350 300, 290 300 L 220 300 C 160 300, 110 330, 110 385 C 110 445, 155 490, 220 490" 
+          stroke="url(#sync-grad-1)" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(0, -44)" />
+
+    <!-- Top Arrow Head -->
+    <path d="M 320 80 L 290 110 L 330 135" stroke="url(#sync-grad-1)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(0, -44)"/>
+
+    <!-- Bottom Arrow Head -->
+    <path d="M 190 420 L 220 390 L 180 365" stroke="url(#sync-grad-1)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(0, -44)"/>
+
+    <!-- Connecting Sync Nodes -->
+    <circle cx="356" cy="171" r="16" fill="#00F0FF" />
+    <circle cx="156" cy="297" r="16" fill="#A855F7" />
+  </g>
+</svg>

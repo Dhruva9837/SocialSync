@@ -11,6 +11,9 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "SocialSync | Cross-Platform Video Publisher",
   description: "Upload once, publish everywhere. Post to Facebook Pages and YouTube Channels automatically with zero repetitive work.",
+  icons: {
+    icon: "/logo.svg",
+  },
 };
 
 export default function RootLayout({

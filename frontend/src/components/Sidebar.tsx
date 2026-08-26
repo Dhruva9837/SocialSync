@@ -85,12 +85,11 @@ export default function Sidebar() {
       <div>
         {/* Logo */}
         <div className="flex items-center gap-3 mb-8">
-          <div
-            className="flex h-9 w-9 items-center justify-center rounded-xl shadow-lg shadow-[#6366F1]/30"
-            style={{ background: "linear-gradient(135deg, #6366F1 0%, #22D3EE 100%)" }}
-          >
-            <span className="font-extrabold text-lg text-white">S</span>
-          </div>
+          <img
+            src="/logo.svg"
+            alt="SocialSync Logo"
+            className="h-9 w-9 rounded-xl shadow-lg shadow-[#6366F1]/30 object-contain"
+          />
           <span
             className="text-xl font-extrabold tracking-wider bg-clip-text text-transparent"
             style={{ backgroundImage: "linear-gradient(135deg, #F8FAFC 0%, #818CF8 50%, #22D3EE 100%)" }}
