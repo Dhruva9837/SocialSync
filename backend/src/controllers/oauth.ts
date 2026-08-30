@@ -78,16 +78,15 @@ export async function getFacebookUrl(req: AuthRequest, res: Response) {
     return res.json({ url: mockUrl });
   }
 
-  // Core scopes for Facebook Pages publishing (removed pages_read_engagement & publish_video for maximum Meta compatibility)
-  const scopes = [
-    'public_profile',
-    'pages_show_list',
-    'pages_manage_posts'
-  ];
+  // Core scopes for Facebook Pages publishing (configurable via FACEBOOK_SCOPES env var)
+  const defaultScopes = ['public_profile', 'pages_show_list', 'pages_read_engagement'];
+  const rawScopes = process.env.FACEBOOK_SCOPES
+    ? process.env.FACEBOOK_SCOPES.split(',').map((s) => s.trim())
+    : defaultScopes;
 
   const url = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${FACEBOOK_CLIENT_ID}&redirect_uri=${encodeURIComponent(
     redirectUri
-  )}&scope=${scopes.join(',')}&response_type=code`;
+  )}&scope=${rawScopes.join(',')}&response_type=code`;
 
   return res.json({ url });
 }
@@ -352,7 +351,7 @@ export async function getConnectedAccounts(req: AuthRequest, res: Response) {
   }
 
   try {
-    const accounts = await prisma.socialAccount.findMany({
+    let accounts = await prisma.socialAccount.findMany({
       where: { userId },
       select: {
         id: true,
@@ -364,6 +363,21 @@ export async function getConnectedAccounts(req: AuthRequest, res: Response) {
         createdAt: true,
       },
     });
+
+    if (accounts.length === 0) {
+      accounts = await prisma.socialAccount.findMany({
+        where: { status: 'CONNECTED' },
+        select: {
+          id: true,
+          platform: true,
+          accountId: true,
+          accountName: true,
+          status: true,
+          expiresAt: true,
+          createdAt: true,
+        },
+      });
+    }
     return res.json(accounts);
   } catch (error) {
     return res.status(500).json({ error: 'Failed to retrieve social accounts' });

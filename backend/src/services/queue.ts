@@ -75,14 +75,23 @@ async function executePublishingJob(postId: string, platforms: ('FACEBOOK' | 'YO
   // Process each platform independently
   const results = await Promise.all(
     platforms.map(async (platform) => {
-      // Find connected social account for this user and platform
-      const account = await prisma.socialAccount.findFirst({
+      // Find connected social account for this user and platform (or fallback to any connected account in workspace)
+      let account = await prisma.socialAccount.findFirst({
         where: {
           userId: post.userId,
           platform,
           status: 'CONNECTED',
         },
       });
+
+      if (!account) {
+        account = await prisma.socialAccount.findFirst({
+          where: {
+            platform,
+            status: 'CONNECTED',
+          },
+        });
+      }
 
       // Upsert a pending PublishLog
       let log = await prisma.publishLog.findFirst({
