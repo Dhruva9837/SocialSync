@@ -78,11 +78,10 @@ export async function getFacebookUrl(req: AuthRequest, res: Response) {
     return res.json({ url: mockUrl });
   }
 
-  // Core scopes for Facebook Pages publishing (configurable via FACEBOOK_SCOPES env var)
-  const defaultScopes = ['public_profile', 'pages_show_list', 'pages_read_user_content', 'pages_manage_posts'];
-  const rawScopes = process.env.FACEBOOK_SCOPES
-    ? process.env.FACEBOOK_SCOPES.split(',').map((s) => s.trim())
-    : defaultScopes;
+  // Core scopes for Facebook Pages publishing
+  // NOTE: Page-level permissions must first be added to the app in Meta Developer Console
+  // → Use Cases / Permissions before requesting them here.
+  const rawScopes = ['public_profile', 'pages_show_list', 'pages_manage_posts'];
 
   const url = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${FACEBOOK_CLIENT_ID}&redirect_uri=${encodeURIComponent(
     redirectUri
