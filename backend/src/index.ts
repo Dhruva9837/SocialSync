@@ -72,6 +72,8 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     mockMode: process.env.MOCK_MODE || 'false',
+    deployVersion: 'v3-scope-fix',
+    fbScopes: process.env.FACEBOOK_SCOPES || 'NOT_SET',
   });
 });
 
