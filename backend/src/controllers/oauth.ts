@@ -79,7 +79,7 @@ export async function getFacebookUrl(req: AuthRequest, res: Response) {
   }
 
   // Core scopes for Facebook Pages publishing (configurable via FACEBOOK_SCOPES env var)
-  const defaultScopes = ['public_profile', 'pages_show_list', 'pages_read_engagement'];
+  const defaultScopes = ['public_profile', 'pages_show_list', 'pages_read_user_content', 'pages_manage_posts'];
   const rawScopes = process.env.FACEBOOK_SCOPES
     ? process.env.FACEBOOK_SCOPES.split(',').map((s) => s.trim())
     : defaultScopes;
